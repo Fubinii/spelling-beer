@@ -1,4 +1,5 @@
 import random
+import math
 
 default_wordlist = 'en_US_60_SB.txt'
 
@@ -8,8 +9,35 @@ def load_wordlist(default_wordlist):
         word_list = [w.strip() for w in dic if w.strip()]
     return word_list
 
-def active_game(default_wordlist):
+def display_letters(letters, center_letter, score, total_score):
+    letters = letters.replace(center_letter, '')
+    # Honeycomb display for 7 letters
+    if len(letters) == 7:
+        letters = letters[:3] + center_letter + letters[3:]
+        print(' ', letters[1].upper(), letters[2].upper(), '  |')
+        print(letters[2].upper(), '('+letters[3].upper()+')', letters[4].upper(), '|', end=' ')
+        print(f'Score: {score} / {total_score}') # To do: turn this into ranks
+        print(' ', letters[5].upper(), letters[6].upper(), '  |')
+    
+    else:
+        letters = center_letter + letters
+        n = math.ceil(math.sqrt(len(letters)))
+        for i, letter in enumerate(letters):
+            if i%n == 0 and i != 0: 
+                print()
+                print('', end=' ')
+            if letter != center_letter:
+                print(letter.upper(), end=" ")
+            else: 
+                print('(' + letter.upper() + ')', end="")
+            
+        print()
+        print(f'Score: {score} / {total_score}') # To do: turn this into ranks
+        return None
+    
 
+def active_game(default_wordlist):
+    use_honey = False # Default for displaying letters
     words = load_wordlist(default_wordlist)
     # Intro
     print("SPELLING BEE")
@@ -26,6 +54,7 @@ def active_game(default_wordlist):
             start = input("Type in letters to initialize game: ").lower()
 
     letters = ''.join(dict.fromkeys(start))
+    if len(letters) == 7: use_honey = True
     print('Available letters:', end=" ")
     for letter in letters:
         print(letter.upper(), end=" ")
@@ -132,14 +161,10 @@ def active_game(default_wordlist):
                 print("Already found.")
             else:
                 print("Not in word list.")
-        print('-', end=" ")
-        for letter in letters:
-            if letter != center_letter:
-                print(letter.upper(), end=" - ")
-            else: 
-                print('[' + letter.upper() + ']', end=" - ")
-        print(f' Score: {score} / {total_score}') # To do: turn this into ranks
+        
+        display_letters(letters, center_letter, score, total_score)
 
+        
 while True:
 
     active_game(default_wordlist)
