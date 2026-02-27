@@ -1,13 +1,14 @@
 import random
 import math
 
+
 default_wordlist = 'en_US_60_SB.txt'
 
 # Loading the dictionary
 def load_wordlist(default_wordlist):
     with open(default_wordlist) as dic:
-        word_list = [w.strip() for w in dic if w.strip()]
-    return word_list
+        words = [w.strip() for w in dic if w.strip()]
+    return words
 
 def display_letters(letters, center_letter, score, total_score):
     letters = letters.replace(center_letter, '')
