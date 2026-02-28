@@ -1,23 +1,21 @@
 import random
 import math
+from time import sleep
+from extra_code import load_words, create_wordlist, provide_start
 
+default_words = 'en_US_60_SB.txt'
 
-default_wordlist = 'en_US_60_SB.txt'
-
-# Loading the dictionary
-def load_wordlist(default_wordlist):
-    with open(default_wordlist) as dic:
-        words = [w.strip() for w in dic if w.strip()]
-    return words
-
-def display_letters(letters, center_letter, score, total_score):
+def display_letters(letters, center_letter, score, total_score, show_score=True):
     letters = letters.replace(center_letter, '')
     # Honeycomb display for 7 letters
     if len(letters)+1 == 7:
         letters = letters[:3] + center_letter + letters[3:]
         print(' ', letters[0].upper(), letters[1].upper(), '  |')
         print(letters[2].upper(), '('+letters[3].upper()+')', letters[4].upper(), '|', end=' ')
-        print(f'Score: {score} / {total_score}') # To do: turn this into ranks
+        if show_score: 
+            print(f'Score: {score} / {total_score}') # To do: turn this into ranks
+        else:
+            print()
         print(' ', letters[5].upper(), letters[6].upper(), '  |')
     
     else:
@@ -37,48 +35,40 @@ def display_letters(letters, center_letter, score, total_score):
         return None
     
 
-def active_game(default_wordlist):
+def active_game(default_words):
     use_honey = False # Default for displaying letters
-    words = load_wordlist(default_wordlist)
+    words = load_words(default_words)
     # Intro
     print("SPELLING BEE")
     print("------------")
-    print("Current word list:", default_wordlist, "To change, type !wordlist <filename>")
-    start = input("Type in letters to initialize game: ").lower()
-    if start.startswith("!wordlist "):
-        filename = start.split(" ", 1)[1]
-        try: 
-            words = load_wordlist(filename)
-            start = input("Type in letters to initialize game: ").lower()
-        except FileNotFoundError:
-            print("File not found. Using default word list.")
-            start = input("Type in letters to initialize game: ").lower()
-
-    letters = ''.join(dict.fromkeys(start))
-    if len(letters) == 7: use_honey = True
-    print('Available letters:', end=" ")
-    for letter in letters:
-        print(letter.upper(), end=" ")
-    print()
-
-    # Center letter
-    print("Chose a center letter:") 
-    center_invalid = True
-    while center_invalid:
-        center_letter = input().lower()
-        if center_letter not in letters:
-            print("Center letter must be one of the letters you initialized.")
+    print("Current word list:", default_words, "To change, type !wordlist <filename>")
+    
+    while True:
+        start = input("Type in letters to initialize game or use !generate: ").lower()
+        if start.startswith("!wordlist "):
+            filename = start.split(" ", 1)[1]
+            try: 
+                words = load_words(filename)
+                print("Word list change successful!")
+            except FileNotFoundError:
+                print("File not found. Using default word list.")
+        elif start == "!generate":
+            letters, center_letter, valid_words, pangrams = provide_start(words)
+            print('Available letters:')
+            display_letters(letters, center_letter, 0, 0, show_score=False)
+            break
         else:
-            center_invalid = False
-
-    # Initialize word list
-    valid_words = []
-    pangrams = []
-    for word in words:
-        if len(word) >= 4 and center_letter in word and all(char in letters for char in word):
-            valid_words.append(word)
-            if all(char in word for char in letters): 
-                pangrams.append(word)
+            letters = ''.join(dict.fromkeys(start))
+            print("Chose a center letter:") 
+            center_invalid = True
+            while center_invalid:
+                center_letter = input().lower()
+                if center_letter not in letters:
+                    print("Center letter must be one of the letters you initialized.")
+                else:
+                    center_invalid = False
+    
+    valid_words, pangrams = create_wordlist(letters, center_letter, words)
 
     # Determine score
     total_score = 0 
@@ -167,12 +157,13 @@ def active_game(default_wordlist):
             else:
                 print("Not in word list.")
         
+        sleep(0.5) 
         display_letters(letters, center_letter, score, total_score)
 
         
 while True:
 
-    active_game(default_wordlist)
+    active_game(default_words)
 
     print("New game? (y/n)")
     if input().lower() != 'y':

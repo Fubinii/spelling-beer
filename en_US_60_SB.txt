@@ -45016,7 +45016,6 @@ negotiations
 negotiator
 negotiators
 negritude
-negro
 negroid
 neigh
 neighbor
