@@ -5,12 +5,16 @@ from extra_code import load_words, create_wordlist, provide_start
 
 default_words = 'en_US_60_SB.txt'
 
-def display_letters(letters, center_letter, score, total_score, show_score=True):
+def display_letters(letters, center_letter, score, total_score, current_rank, show_score=True, show_ranks=True):
     letters = letters.replace(center_letter, '')
     # Honeycomb display for 7 letters
     if len(letters)+1 == 7:
         letters = letters[:3] + center_letter + letters[3:]
-        print(' ', letters[0].upper(), letters[1].upper(), '  |')
+        print(' ', letters[0].upper(), letters[1].upper(), '  |', end=' ')
+        if show_ranks:
+            print('Rank:', current_rank)
+        else:
+            print()
         print(letters[2].upper(), '('+letters[3].upper()+')', letters[4].upper(), '|', end=' ')
         if show_score: 
             print(f'Score: {score} / {total_score}') # To do: turn this into ranks
@@ -55,7 +59,7 @@ def active_game(default_words):
         elif start == "!generate":
             letters, center_letter, valid_words, pangrams = provide_start(words)
             print('Available letters:')
-            display_letters(letters, center_letter, 0, 0, show_score=False)
+            display_letters(letters, center_letter, 0, 0, None, show_score=False, show_ranks=False)
             break
         else:
             letters = ''.join(dict.fromkeys(start))
@@ -67,6 +71,7 @@ def active_game(default_words):
                     print("Center letter must be one of the letters you initialized.")
                 else:
                     center_invalid = False
+            break
     
     valid_words, pangrams = create_wordlist(letters, center_letter, words)
 
@@ -80,6 +85,18 @@ def active_game(default_words):
             if word in pangrams: total_score += 7 # Bonus points for pangrams
 
     print('Total points achievable:', total_score, 'including', len(pangrams), 'pangrams.')
+    ranks = {
+        math.floor(0.02*total_score): 'Good Start',
+        math.floor(0.08*total_score): 'Good',
+        math.floor(0.15*total_score): 'Solid',
+        math.floor(0.25*total_score): 'Nice',
+        math.floor(0.4*total_score): 'Great',
+        math.floor(0.5*total_score): 'Amazing',
+        math.floor(0.7*total_score): 'Genius',
+        total_score: 'Queen Bee'
+    }
+    current_rank = 'Beginner'
+
     print('Start by typing a word. (For a list of commands type !help)')
     # Game loop
     found_words = []
@@ -89,7 +106,6 @@ def active_game(default_words):
 
         #=== COMANDS ===
         if user_input == "!help":
-            print("!count - Show the number of valid words remaining")
             print("!exit - Exit current game")
             print("!found - Show already found words")
             print("!hints - Show available hint commands")
@@ -98,9 +114,6 @@ def active_game(default_words):
             print("!reveal, !end - Reveal all valid words (ends the game)")
             print("!shuffle - Shuffle the letters")
             
-        elif user_input == "!count":
-            print(f"You found {len(found_words)} out of {len(valid_words)} possible words.")
-
         elif user_input == "!exit":
             break
 
@@ -148,17 +161,26 @@ def active_game(default_words):
                 found_words.append(user_input)
                 score += 1 if len(user_input) == 4 else len(user_input)
                 if user_input in pangrams:
-                    print("*** PANGRAM! *** Amazing!")
+                    print("*** PANGRAM! ***")
                     score += 7
+
                 else:
                     print("Good!")
+
+                # Rank update    
+                for t, r in ranks.items():
+                    if score >=  t:
+                        current_rank = r
+                    elif score < t:
+                        break
+
             elif user_input in found_words:
                 print("Already found.")
             else:
                 print("Not in word list.")
         
         sleep(0.5) 
-        display_letters(letters, center_letter, score, total_score)
+        display_letters(letters, center_letter, score, total_score, current_rank) 
 
         
 while True:
