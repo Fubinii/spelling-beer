@@ -3148,6 +3148,7 @@ archrivals
 archway
 archways
 arcing
+arco
 arcs
 arctic
 arctics
@@ -4005,6 +4006,7 @@ auricle
 auricles
 auricular
 aurora
+auroral
 auroras
 auscultate
 auscultated
@@ -9264,6 +9266,7 @@ calks
 call
 calla
 callable
+callaloo
 callas
 callback
 callbacks
@@ -15979,6 +15982,7 @@ crocheter
 crocheters
 crocheting
 crochets
+croc
 crock
 crocked
 crockery
@@ -30279,8 +30283,6 @@ grinding
 grinds
 grindstone
 grindstones
-gringo
-gringos
 grinned
 grinning
 grins
@@ -58944,6 +58946,7 @@ ribber
 ribbers
 ribbing
 ribbon
+ribboning
 ribbons
 ribeye
 ribeyes

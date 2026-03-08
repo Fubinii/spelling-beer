@@ -109,7 +109,7 @@ def active_game(default_words):
     
     def command_reveal(score, total_score, valid_words, found_words, pangrams):
         print(f"Revealed at {score} / {total_score} points. Valid words were:")
-        for word in valid_words:
+        for word in sorted(valid_words):
             if word in found_words and word in pangrams:
                 print('✓ ', word.upper())
             elif word in found_words:
